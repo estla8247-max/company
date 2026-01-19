@@ -252,9 +252,9 @@ def list_card(title: str, items: List[Dict]):
     if len(items) > 5:
         card["buttons"] = [
             {
-                "label": "더 보기",
+                "label": "더 보기 ➕",
                 "action": "message",
-            "messageText": f"{title} 더 보여줘" # Placeholder for pagination
+                "messageText": f"{title} 더 보여줘"
             }
         ]
         
@@ -334,18 +334,18 @@ def get_welcome_response():
             "outputs": [
                 {
                     "simpleText": {
-                        "text": "안녕하세요 이스트라입니다.\n원하시는 키워드를 입력하거나\n버튼을 선택해주세요."
+                        "text": "👋 안녕하세요 이스트라입니다.\n\n원하시는 키워드를 입력하거나\n아래 버튼을 선택해주세요."
                     }
                 }
             ],
             "quickReplies": [
-                {"messageText": "챗봇 사용법", "action": "message", "label": "챗봇 사용법"},
-                {"messageText": "홈페이지 이동", "action": "message", "label": "홈페이지"},
-                {"messageText": "배송조회", "action": "message", "label": "배송조회"},
-                {"messageText": "회사 소개", "action": "message", "label": "회사소개"},
-                {"messageText": "QnA 리스트 보여줘", "action": "message", "label": "자주 묻는 질문"},
-                {"messageText": "자가 진단 리스트 보여줘", "action": "message", "label": "자가 진단"},
-                {"messageText": "상담원 연결", "action": "message", "label": "상담원 연결"}
+                {"messageText": "챗봇 사용법", "action": "message", "label": "💡 챗봇 사용법"},
+                {"messageText": "홈페이지 이동", "action": "message", "label": "🏠 홈페이지"},
+                {"messageText": "배송조회", "action": "message", "label": "🚚 배송조회"},
+                {"messageText": "회사 소개", "action": "message", "label": "🏢 회사소개"},
+                {"messageText": "QnA 리스트 보여줘", "action": "message", "label": "❓ 자주 묻는 질문"},
+                {"messageText": "자가 진단 리스트 보여줘", "action": "message", "label": "🛠️ 자가 진단"},
+                {"messageText": "상담원 연결", "action": "message", "label": "🎧 상담원 연결"}
             ]
         }
     }
@@ -393,8 +393,16 @@ async def fallback(request: Request):
             # Extract query
             query = utterance.replace(" 검색 결과 더 보여줘", "").replace(" 더 보여줘", "").strip()
             
-            # Re-search
-            results = indexer.search(query)
+            # Determine source (Category or Search)
+            if query in ["자주 묻는 질문", "QnA"]:
+                results = indexer.get_by_category("QnA")
+                title_prefix = "자주 묻는 질문"
+            elif query in ["자가 진단", "Selftest"]:
+                results = indexer.get_by_category("Selftest")
+                title_prefix = "자가 진단"
+            else:
+                results = indexer.search(query)
+                title_prefix = f"'{query}' 검색 결과"
             
             # Get next 5 items (index 5 to 10)
             next_items = results[5:10]
@@ -404,8 +412,8 @@ async def fallback(request: Request):
                     "version": "2.0",
                     "template": {
                         "outputs": [
-                            simple_text(f"'{query}' 검색 결과 더 보기 (6~{5+len(next_items)}위)"),
-                            list_card(f"'{query}' 더 보기", next_items)
+                            simple_text(f"{title_prefix} 더 보기 (6~{5+len(next_items)}위)"),
+                            list_card(f"{query} 더 보기", next_items)
                         ]
                     }
                 }
@@ -414,7 +422,7 @@ async def fallback(request: Request):
                     "version": "2.0",
                     "template": {
                         "outputs": [
-                            simple_text("더 이상 보여줄 내용이 없습니다.")
+                            simple_text("🚫 더 이상 보여줄 내용이 없습니다.")
                         ]
                     }
                 }
@@ -427,7 +435,7 @@ async def fallback(request: Request):
                 "version": "2.0",
                 "template": {
                     "outputs": [
-                        simple_text("자가 진단 리스트입니다.\n원하시는 항목을 선택해주세요."),
+                        simple_text("🛠️ 자가 진단 리스트입니다.\n원하시는 항목을 선택해주세요."),
                         list_card("자가 진단", items)
                     ]
                 }
@@ -439,7 +447,7 @@ async def fallback(request: Request):
                 "version": "2.0",
                 "template": {
                     "outputs": [
-                        simple_text("자주 묻는 질문 리스트입니다.\n원하시는 항목을 선택해주세요."),
+                        simple_text("❓ 자주 묻는 질문 리스트입니다.\n원하시는 항목을 선택해주세요."),
                         list_card("자주 묻는 질문", items)
                     ]
                 }
