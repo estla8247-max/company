@@ -191,6 +191,11 @@ indexer = ContentIndexer(BASE_DIR)
 
 # --- Response Helpers ---
 
+def truncate(text: str, limit: int) -> str:
+    if len(text) > limit:
+        return text[:limit-3] + "..."
+    return text
+
 def simple_text(text: str):
     return {
         "simpleText": {"text": text}
@@ -204,15 +209,15 @@ def list_card(title: str, items: List[Dict]):
     kakao_items = []
     for item in items[:5]: # ListCard supports max 5 items
         kakao_items.append({
-            "title": item['title'],
-            "description": item.get('category', ''),
+            "title": truncate(item['title'], 35), # Limit item title
+            "description": truncate(item.get('category', ''), 40), # Limit description
             "action": "message",
             "messageText": item['title'] # Clicking sends the title as a message
         })
         
     card = {
         "header": {
-            "title": title
+            "title": truncate(title, 30) # Limit header title
         },
         "items": kakao_items
     }
@@ -242,7 +247,7 @@ def carousel_basic_card(items: List[Dict]):
             summary = summary[:80] + "..."
             
         cards.append({
-            "title": item['title'],
+            "title": truncate(item['title'], 35), # Limit title
             "description": summary if summary else item.get('category', ''),
             "buttons": [
                 {
@@ -273,7 +278,7 @@ def basic_card(item: Dict):
 
     return {
         "basicCard": {
-            "title": item['title'],
+            "title": truncate(item['title'], 35), # Limit title
             "description": summary if summary else item.get('category', ''),
             "buttons": [
                 {
