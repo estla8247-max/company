@@ -283,8 +283,7 @@ def basic_card(item: Dict):
 
 # --- Endpoints ---
 
-@app.post("/api/welcome")
-async def welcome(request: Request):
+def get_welcome_response():
     return {
         "version": "2.0",
         "template": {
@@ -306,6 +305,10 @@ async def welcome(request: Request):
         }
     }
 
+@app.post("/api/welcome")
+async def welcome(request: Request):
+    return get_welcome_response()
+
 @app.post("/api/fallback")
 async def fallback(request: Request):
     try:
@@ -314,6 +317,10 @@ async def fallback(request: Request):
         utterance = user_request.get("utterance", "").strip()
         
         print(f"User Utterance: {utterance}")
+
+        # 0. Handle Home/Start Keywords
+        if any(keyword == utterance for keyword in ["시작", "홈으로", "처음으로", "start", "home"]):
+             return get_welcome_response()
 
         # 1. Handle Category Requests (Explicit Mappings)
         # Prioritize specific "Selftest" keywords first to avoid "리스트" ambiguity
