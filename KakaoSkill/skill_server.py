@@ -2,6 +2,7 @@ import os
 import urllib.parse
 import re
 import difflib
+import html
 from typing import Optional, Dict, Any, List
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -84,6 +85,8 @@ class ContentIndexer:
                 
                 # Simple regex to strip HTML tags
                 text = re.sub('<[^<]+?>', ' ', content)
+                # Unescape HTML entities (e.g., &#x27; -> ')
+                text = html.unescape(text)
                 # Remove extra whitespace
                 text = ' '.join(text.split())
                 
