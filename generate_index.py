@@ -118,6 +118,16 @@ html_template_start = """<!DOCTYPE html>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5c0-5.523 4.477-10 10-10z"></path><path d="M8.5 8.5v.01"></path><path d="M16 15.5v.01"></path><path d="M12 12v.01"></path><path d="M11 17a2 2 0 0 1 2 2"></path></svg>
                 ESTLA Knowledge Base
             </a>
+            <div class="flex-1 max-w-md mx-4">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <input type="text" id="searchInput" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="키워드로 검색해보세요 (예: 리모컨, 화면)">
+                </div>
+            </div>
             <nav class="hidden md:flex gap-6">
                 <a href="#section-QnA" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">QnA</a>
                 <a href="#section-Selftest" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Selftest</a>
@@ -126,12 +136,15 @@ html_template_start = """<!DOCTYPE html>
     </header>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div id="noResults" class="hidden text-center py-12 text-gray-500">
+            검색 결과가 없습니다.
+        </div>
 """
 
 html_content = html_template_start
 
 # QnA Section
-html_content += '<div id="section-QnA" class="mb-12"><h2 class="section-title">자주 묻는 질문 (QnA)</h2><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">'
+html_content += '<div id="section-QnA" class="mb-12 section-container"><h2 class="section-title">자주 묻는 질문 (QnA)</h2><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 card-grid">'
 if os.path.exists(qna_dir):
     for folder in sorted(os.listdir(qna_dir)):
         folder_path = os.path.join(qna_dir, folder)
@@ -143,7 +156,7 @@ if os.path.exists(qna_dir):
 html_content += '</div></div>'
 
 # Selftest Section
-html_content += '<div id="section-Selftest"><h2 class="section-title">자가 진단 (Selftest)</h2><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">'
+html_content += '<div id="section-Selftest" class="section-container"><h2 class="section-title">자가 진단 (Selftest)</h2><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 card-grid">'
 if os.path.exists(selftest_dir):
     for folder in sorted(os.listdir(selftest_dir)):
         folder_path = os.path.join(selftest_dir, folder)
@@ -161,6 +174,44 @@ html_content += """
             &copy; 2024 ESTLA. All rights reserved.
         </div>
     </footer>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.card');
+        const noResults = document.getElementById('noResults');
+        const sections = document.querySelectorAll('.section-container');
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            let hasVisibleCards = false;
+
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                    hasVisibleCards = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Hide empty sections
+            sections.forEach(section => {
+                const visibleCardsInSection = section.querySelectorAll('.card[style="display: flex"], .card:not([style*="display: none"])');
+                if (visibleCardsInSection.length > 0) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+
+            if (hasVisibleCards) {
+                noResults.classList.add('hidden');
+            } else {
+                noResults.classList.remove('hidden');
+            }
+        });
+    </script>
 </body>
 </html>
 """
