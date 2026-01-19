@@ -99,9 +99,25 @@ class ContentIndexer:
                         return text[:last_period+1]
                     return text[:max_len] + "..."
                 return text
+            return text
         except Exception as e:
             print(f"Error reading {file_path}: {e}")
             return "내용을 미리볼 수 없습니다."
+
+    def extract_image(self, file_path):
+        """
+        Extracts the first image src from the HTML file.
+        """
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                # Find first img tag
+                match = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', content)
+                if match:
+                    return match.group(1)
+            return None
+        except Exception:
+            return None
 
     def reload_index(self):
         self.index = []
@@ -131,6 +147,16 @@ class ContentIndexer:
                     web_path = f"/{safe_folder}/{safe_title}/index.html"
                     
                     summary = self.extract_summary(index_file)
+                    image_src = self.extract_image(index_file)
+                    
+                    # Construct full image URL if image exists
+                    image_url = None
+                    if image_src:
+                        # Handle relative paths
+                        if not image_src.startswith("http"):
+                             image_url = f"{HOST_BASE_URL}/{safe_folder}/{safe_title}/{image_src}"
+                        else:
+                             image_url = image_src
 
                     self.index.append({
                         "title": post_title,
@@ -138,6 +164,7 @@ class ContentIndexer:
                         "path": web_path,
                         "full_path": index_file,
                         "summary": summary,
+                        "image_url": image_url,
                         "link": HOST_BASE_URL + web_path
                     })
         print(f"Indexed {len(self.index)} documents.")
@@ -276,10 +303,18 @@ def basic_card(item: Dict):
     if 'link' not in item:
         print(f"Warning: Item missing link: {item}")
 
+    # Default image if none found
+    image_url = item.get('image_url')
+    if not image_url:
+        image_url = "https://via.placeholder.com/800x400?text=ESTLA"
+
     return {
         "basicCard": {
             "title": truncate(item['title'], 35), # Limit title
             "description": summary if summary else item.get('category', ''),
+            "thumbnail": {
+                "imageUrl": image_url
+            },
             "buttons": [
                 {
                     "action": "webLink",
