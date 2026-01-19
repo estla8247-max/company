@@ -273,9 +273,17 @@ def carousel_basic_card(items: List[Dict]):
         if len(summary) > 80:
             summary = summary[:80] + "..."
             
+        # Default image if none found
+        image_url = item.get('image_url')
+        if not image_url:
+            image_url = f"{HOST_BASE_URL}/images/default_thumbnail.jpg"
+
         cards.append({
             "title": truncate(item['title'], 35), # Limit title
             "description": summary if summary else item.get('category', ''),
+            "thumbnail": {
+                "imageUrl": image_url
+            },
             "buttons": [
                 {
                     "action": "webLink",
@@ -306,7 +314,7 @@ def basic_card(item: Dict):
     # Default image if none found
     image_url = item.get('image_url')
     if not image_url:
-        image_url = "https://via.placeholder.com/800x400?text=ESTLA"
+        image_url = f"{HOST_BASE_URL}/images/default_thumbnail.jpg"
 
     return {
         "basicCard": {
