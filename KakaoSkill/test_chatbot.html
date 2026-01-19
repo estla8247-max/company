@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이스트라 챗봇 테스트</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+
+        .header {
+            background-color: #fee500;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            color: #3c1e1e;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background-color: #fee500;
+            color: #3c1e1e;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background-color: #eee;
+            color: #333;
+        }
+
+        .input-area {
+            padding: 10px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            background-color: white;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #fee500;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #3c1e1e;
+        }
+
+        button:hover {
+            background-color: #fdd835;
+        }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 10px;
+        }
+
+        .card-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: #666;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-btn {
+            display: block;
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid #eee;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .card-btn:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* Carousel */
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding-bottom: 10px;
+        }
+
+        .carousel .card {
+            min-width: 250px;
+        }
+
+        /* Quick Replies */
+        .quick-replies {
+            display: flex;
+            overflow-x: auto;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .quick-reply {
+            padding: 8px 12px;
+            background-color: #eee;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            color: #555;
+        }
+
+        .quick-reply:hover {
+            background-color: #ddd;
+        }
+
+        /* Config Panel */
+        .config-panel {
+            padding: 10px;
+            background: #f8f8f8;
+            border-bottom: 1px solid #ddd;
+            font-size: 12px;
+        }
+
+        .config-panel label {
+            margin-right: 5px;
+        }
+
+        .config-panel input {
+            padding: 5px;
+            width: 200px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">이스트라 챗봇</div>
+        <div class="config-panel">
+            <label>API URL:</label>
+            <input type="text" id="apiUrl" value="http://localhost:8081">
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">반갑습니다! 테스트를 시작하려면 아무 말이나 입력하거나 '시작'이라고 말해주세요.</div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="메시지를 입력하세요..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">전송</button>
+        </div>
+    </div>
+
+    <script>
+        let API_BASE_URL = "http://localhost:8081";
+
+        document.getElementById('apiUrl').addEventListener('change', (e) => {
+            API_BASE_URL = e.target.value;
+        });
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage(text = null) {
+            const input = document.getElementById('userInput');
+            const message = text || input.value.trim();
+
+            if (!message) return;
+
+            if (!text) {
+                addMessage(message, 'user');
+                input.value = '';
+            }
+
+            // Determine endpoint based on message
+            let endpoint = "/api/fallback";
+            if (message === "시작") endpoint = "/api/welcome";
+
+            try {
+                const response = await fetch(API_BASE_URL + endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userRequest: {
+                            utterance: message
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                renderResponse(data);
+
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage("오류가 발생했습니다: " + error.message, 'bot');
+            }
+        }
+
+        function addMessage(text, type) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${type}`;
+            msgDiv.innerText = text;
+            messagesDiv.appendChild(msgDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function renderResponse(data) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const outputs = data.template.outputs;
+            const quickReplies = data.template.quickReplies;
+
+            outputs.forEach(output => {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'message bot';
+                msgDiv.style.backgroundColor = 'transparent';
+                msgDiv.style.padding = '0';
+                msgDiv.style.width = '100%';
+
+                // SimpleText
+                if (output.simpleText) {
+                    const textDiv = document.createElement('div');
+                    textDiv.className = 'message bot';
+                    textDiv.innerText = output.simpleText.text;
+                    msgDiv.appendChild(textDiv);
+                }
+
+                // BasicCard
+                else if (output.basicCard) {
+                    msgDiv.appendChild(createCard(output.basicCard));
+                }
+
+                // Carousel
+                else if (output.carousel) {
+                    const carouselDiv = document.createElement('div');
+                    carouselDiv.className = 'carousel';
+                    output.carousel.items.forEach(item => {
+                        carouselDiv.appendChild(createCard(item));
+                    });
+                    msgDiv.appendChild(carouselDiv);
+                }
+
+                // ListCard
+                else if (output.listCard) {
+                    msgDiv.appendChild(createListCard(output.listCard));
+                }
+
+                messagesDiv.appendChild(msgDiv);
+            });
+
+            // Quick Replies
+            if (quickReplies && quickReplies.length > 0) {
+                const qrDiv = document.createElement('div');
+                qrDiv.className = 'quick-replies';
+                quickReplies.forEach(qr => {
+                    const btn = document.createElement('div');
+                    btn.className = 'quick-reply';
+                    btn.innerText = qr.label;
+                    btn.onclick = () => sendMessage(qr.messageText);
+                    qrDiv.appendChild(btn);
+                });
+                const wrapper = document.createElement('div');
+                wrapper.className = 'message bot';
+                wrapper.style.backgroundColor = 'transparent';
+                wrapper.style.padding = '0';
+                wrapper.appendChild(qrDiv);
+                messagesDiv.appendChild(wrapper);
+            }
+
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function createCard(cardData) {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            if (cardData.thumbnail) {
+                const img = document.createElement('img');
+                img.src = cardData.thumbnail.imageUrl;
+                card.appendChild(img);
+            }
+
+            const content = document.createElement('div');
+            content.className = 'card-content';
+
+            if (cardData.title) {
+                const title = document.createElement('div');
+                title.className = 'card-title';
+                title.innerText = cardData.title;
+                content.appendChild(title);
+            }
+
+            if (cardData.description) {
+                const desc = document.createElement('div');
+                desc.className = 'card-desc';
+                desc.innerText = cardData.description;
+                content.appendChild(desc);
+            }
+
+            card.appendChild(content);
+
+            if (cardData.buttons) {
+                cardData.buttons.forEach(btn => {
+                    const a = document.createElement('a');
+                    a.className = 'card-btn';
+                    a.innerText = btn.label;
+                    if (btn.action === 'webLink') {
+                        a.href = btn.webLinkUrl;
+                        a.target = '_blank';
+                    } else if (btn.action === 'message') {
+                        a.onclick = () => sendMessage(btn.messageText);
+                    }
+                    card.appendChild(a);
+                });
+            }
+
+            return card;
+        }
+
+        function createListCard(cardData) {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            // Header
+            if (cardData.header) {
+                const header = document.createElement('div');
+                header.style.padding = '10px';
+                header.style.fontWeight = 'bold';
+                header.style.borderBottom = '1px solid #eee';
+                header.style.backgroundColor = '#f8f8f8';
+                header.innerText = cardData.header.title;
+                card.appendChild(header);
+            }
+
+            // Items
+            if (cardData.items) {
+                cardData.items.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.style.padding = '10px';
+                    itemDiv.style.borderBottom = '1px solid #eee';
+                    itemDiv.style.cursor = 'pointer';
+                    itemDiv.style.display = 'flex';
+                    itemDiv.style.flexDirection = 'column';
+
+                    const title = document.createElement('div');
+                    title.style.fontWeight = 'bold';
+                    title.style.fontSize = '14px';
+                    title.innerText = item.title;
+
+                    const desc = document.createElement('div');
+                    desc.style.fontSize = '12px';
+                    desc.style.color = '#666';
+                    desc.innerText = item.description;
+
+                    itemDiv.appendChild(title);
+                    itemDiv.appendChild(desc);
+
+                    if (item.action === 'message') {
+                        itemDiv.onclick = () => sendMessage(item.messageText);
+                    } else if (item.action === 'webLink') {
+                        itemDiv.onclick = () => window.open(item.webLinkUrl, '_blank');
+                    }
+
+                    card.appendChild(itemDiv);
+                });
+            }
+
+            // Buttons
+            if (cardData.buttons) {
+                cardData.buttons.forEach(btn => {
+                    const a = document.createElement('div');
+                    a.className = 'card-btn';
+                    a.innerText = btn.label;
+                    if (btn.action === 'message') {
+                        a.onclick = () => sendMessage(btn.messageText);
+                    }
+                    card.appendChild(a);
+                });
+            }
+
+            return card;
+        }
+    </script>
+</body>
+
+</html>

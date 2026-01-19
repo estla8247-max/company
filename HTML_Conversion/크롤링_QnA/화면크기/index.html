@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>화면크기</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --text-color: #1f2937;
+            --bg-color: #f9fafb;
+            --card-bg: #ffffff;
+        }
+        
+        body {
+            font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #111827;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 2rem auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        img:hover {
+            transform: scale(1.02);
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary-color);
+            background-color: #eff6ff;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .meta-info {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>화면크기</h1>
+<div class="meta-info">Original Post: <a href="https://estla.co.kr/QnA/?q=YToyOntzOjQ6InBhZ2UiO2k6MjtzOjEyOiJrZXl3b3JkX3R5cGUiO3M6MzoiYWxsIjt9&bmode=view&idx=3561506&t=board" target="_blank">https://estla.co.kr/QnA/?q=YToyOntzOjQ6InBhZ2UiO2k6MjtzOjEyOiJrZXl3b3JkX3R5cGUiO3M6MzoiYWxsIjt9&bmode=view&idx=3561506&t=board</a></div>
+<img src="images/image_01.jpg" alt="image">
+<p>화면크기란 TV 화면의 대각선 길이를 나타냅니다.</p>
+<p>화면크기 비교</p>
+<img src="images/image_02.jpg" alt="image">
+<p>용도별 화면크기 선택</p>
+<p>최근에 출시되는 TV는 UHD 고해상도로 화소가 더 촘촘해 가까운 거리에서도 선명한 화질을 즐길 수 있기 때문에</p>
+<p>자신의 집 크기에 30을 더한 크기의 TV가 적당합니다. 보급형으로는 109cm(43인치)가 인기가 높으며,</p>
+<p>거실용으로 139cm(55인치) 이상 화면크기의 TV가 인기가 좋습니다.</p>
+<p>거실크기에 따라 권장하는 TV 화면크기</p>
+<p>용도 원룸, 작은방 66.1㎡</p>
+<p>20평 거실 99.2㎡</p>
+<p>30평 거실 132.2㎡</p>
+<p>40평 이상 적정 크기 109cm 124~139cm 152~165cm 176cm (43인치) (49~55인치) (60~65인치) (70인치)</p>
+    </div>
+    
+    <script>
+        // Simple lightbox effect
+        document.querySelectorAll('img').forEach(img => {
+            img.style.cursor = 'zoom-in';
+            img.addEventListener('click', () => {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                } else {
+                    img.requestFullscreen();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

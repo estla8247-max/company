@@ -1,0 +1,8 @@
+Error: 'link'
+Traceback (most recent call last):
+  File "D:\업무\matari\챗봇_이스트라\KakaoSkill\skill_server.py", line 381, in fallback
+    basic_card(item)
+  File "D:\업무\matari\챗봇_이스트라\KakaoSkill\skill_server.py", line 271, in basic_card
+    "webLinkUrl": item['link']
+                  ~~~~^^^^^^^^
+KeyError: 'link'

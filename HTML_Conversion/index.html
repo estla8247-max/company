@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이스트라 챗봇 지식베이스</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --text-color: #1f2937;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --header-height: 64px;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e5e7eb;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav a {
+            color: #4b5563;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 3rem 0 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 24px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border: 1px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #bfdbfe;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+            color: #111827;
+        }
+
+        .card-meta {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background-color: #eff6ff;
+            color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 0 1rem;
+            }
+            
+            main {
+                padding: 1rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="#" class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5c0-5.523 4.477-10 10-10z"></path><path d="M8.5 8.5v.01"></path><path d="M16 15.5v.01"></path><path d="M12 12v.01"></path><path d="M11 17a2 2 0 0 1 2 2"></path></svg>
+                ESTLA Knowledge Base
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#section-QnA">QnA</a></li>
+                    <li><a href="#section-Selftest">Selftest</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <h2 id="section-QnA" class="section-title">QnA</h2><div class="grid">
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/10%EB%B9%84%ED%8A%B8%20%ED%8C%A8%EB%84%90%EC%9D%B4%EB%9E%80/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">10비트 패널이란</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/EBS%20%EC%98%A8%EB%9D%BC%EC%9D%B8%20%EA%B0%95%EC%9D%98%20%EB%B3%B4%EB%8A%94%20%EB%B0%A9%EB%B2%95/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">EBS 온라인 강의 보는 방법</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/HDR%EC%9D%B4%EB%9E%80/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">HDR이란</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/LED%20TV%EB%9E%80/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">LED TV란</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/TV%20%EC%A3%BC%EC%82%AC%EC%9C%A8%28Hz%29%EC%9D%B4%EB%9E%80/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">TV 주사율(Hz)이란</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/USB%20%EC%9E%AC%EC%83%9D/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">USB 재생</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746899/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746899</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746902/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746902</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746904/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746904</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746906/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746906</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746908/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746908</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746910/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746910</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746912/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746912</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746914/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746914</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746916/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746916</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746918/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746918</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746921/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746921</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746923/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746923</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746925/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746925</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746927/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746927</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/Untitled_1768746929/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">Untitled_1768746929</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/VA%ED%8C%A8%EB%84%90%EA%B3%BC%20IPS%ED%8C%A8%EB%84%90%EC%9D%98%20%ED%8A%B9%EC%A7%95%EC%9D%80/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">VA패널과 IPS패널의 특징은</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/%EB%AA%85%EC%95%94%EB%B9%84%EB%9E%80/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">명암비란</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/%EB%B0%9D%EA%B8%B0%28%3D%ED%9C%98%EB%8F%84%29cdm2/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">밝기(=휘도)cdm2</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/%EC%84%9C%EB%B8%8C%20%ED%94%BD%EC%85%80%EC%9D%B4%EB%9E%80/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">서브 픽셀이란</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/%EC%98%A4%ED%94%84%EB%9D%BC%EC%9D%B8%20%EB%8C%80%EB%A6%AC%EC%A0%90%20%EB%A6%AC%EC%8A%A4%ED%8A%B8/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">오프라인 대리점 리스트</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/%EC%9E%90%EB%A7%89%20%EA%B9%A8%EC%A7%90%20%ED%95%B4%EA%B2%B0%EB%B0%A9%EB%B2%95%286886%20%EC%8A%A4%EC%BC%80%EC%9D%BC%EB%9F%AC%20%EC%A0%81%EC%9A%A9%EC%A0%9C%ED%92%88%EC%9A%A9%29/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">자막 깨짐 해결방법(6886 스케일러 적용제품용)</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/%EC%9E%90%EB%A7%89%20%EA%B9%A8%EC%A7%90%20%ED%95%B4%EA%B2%B0%EB%B0%A9%EB%B2%95%28%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C%20%EC%A0%81%EC%9A%A9%20%EC%A0%9C%ED%92%88%EC%9A%A9%29/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">자막 깨짐 해결방법(안드로이드 적용 제품용)</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/%ED%95%B4%EC%83%81%EB%8F%84%EB%9E%80/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">해상도란</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_QnA/%ED%99%94%EB%A9%B4%ED%81%AC%EA%B8%B0/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">QnA</span>
+                    <h3 class="card-title">화면크기</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            </div><h2 id="section-Selftest" class="section-title">Selftest</h2><div class="grid">
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/EDID%20%EB%B3%80%EA%B2%BD%20%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">EDID 변경 설정하기</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/HDMI%20%EC%A0%9C%EC%96%B4%20%EB%B9%84%ED%99%9C%EC%84%B1%ED%99%94%20%EB%B0%A9%EB%B2%95%20%28CEC%20%EC%84%A4%EC%A0%95%29/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">HDMI 제어 비활성화 방법 (CEC 설정)</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/TV%20%ED%99%94%EB%A9%B4%EC%97%90%20%EA%B4%91%EA%B3%A0%20%ED%99%94%EB%A9%B4%EC%9D%B4%20%EB%82%98%EC%99%80%EC%9A%94%20%28%ED%8C%9D%EC%97%85%EC%B0%BD%EC%9D%B4%20%EB%85%B8%EC%B6%9C%EB%8F%BC%EC%9A%94%EC%A0%84%EC%8B%9C%EB%AA%A8%EB%93%9C%29/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">TV 화면에 광고 화면이 나와요 (팝업창이 노출돼요전시모드)</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EB%A1%9C%EB%94%A9%20%ED%99%94%EB%A9%B4%EB%A7%8C%20%EA%B3%84%EC%86%8D%20%EB%82%98%EC%99%80%EC%9A%94%20%28%EB%B6%80%ED%8C%85%20%ED%99%94%EB%A9%B4%20%EB%B0%98%EB%B3%B5%29/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">로딩 화면만 계속 나와요 (부팅 화면 반복)</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EB%A6%AC%EB%AA%A8%EC%BB%A8%20%EA%B5%AC%EA%B8%80%20%EC%96%B4%EC%8B%9C%EC%8A%A4%ED%84%B4%ED%8A%B8%EA%B0%80%20%EC%95%88%EB%8F%BC%EC%9A%94%20%28%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C%EA%B5%AC%EA%B8%80%20TV%29/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">리모컨 구글 어시스턴트가 안돼요 (안드로이드구글 TV)</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EB%A6%AC%EB%AA%A8%EC%BB%A8%20%EB%8F%99%EC%9E%91%EC%9D%B4%20%EC%95%88%EB%8F%BC%EC%9A%94%20%28%EB%A6%AC%EB%AA%A8%EC%BB%A8%20%EB%A8%B9%ED%86%B5%29/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">리모컨 동작이 안돼요 (리모컨 먹통)</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EB%A6%AC%EB%AA%A8%EC%BB%A8%EC%9D%B4%20%EB%B2%84%EB%B2%85%EA%B1%B0%EB%A0%A4%EC%9A%94%20%28TV%EA%B0%80%20%EB%8A%90%EB%A0%A4%EC%A1%8C%EC%96%B4%EC%9A%94%29/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">리모컨이 버벅거려요 (TV가 느려졌어요)</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EB%AF%B8%EB%9F%AC%EB%A7%81%EC%9D%B4%20%EC%95%88%EB%8F%BC%EC%9A%94/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">미러링이 안돼요</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EC%85%8B%ED%86%B1%EB%B0%95%EC%8A%A4%20%ED%99%94%EB%A9%B4%EC%9D%B4%20%EC%95%88%20%EB%82%98%EC%99%80%EC%9A%94%20%28%ED%99%94%EB%A9%B4%EC%97%90%20%EC%8B%A0%ED%98%B8%20%EC%97%86%EC%9D%8C%EC%86%8C%EB%A6%AC%EB%8A%94%20%EB%82%98%EC%98%A4%EB%82%98%20%ED%99%94%EB%A9%B4%EC%9D%B4%20%EC%95%88%EB%B3%B4%EC%9D%BC%20%EB%95%8C%29/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">셋톱박스 화면이 안 나와요 (화면에 신호 없음소리는 나오나 화면이 안보일 때)</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EC%85%8B%ED%86%B1%EB%B0%95%EC%8A%A4%EB%A5%BC%20%EC%97%B0%EA%B2%B0%ED%96%88%EB%8A%94%EB%8D%B0%20%EC%B1%84%EB%84%90%20%EA%B2%80%EC%83%89%EC%9D%B4%20%EC%95%88%EB%8F%BC%EC%9A%94/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">셋톱박스를 연결했는데 채널 검색이 안돼요</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EC%86%8C%EB%A6%AC%EA%B0%80%20%EC%95%88%20%EB%93%A4%EB%A0%A4%EC%9A%94%20%28%ED%99%94%EB%A9%B4%EB%A7%8C%20%EB%B3%B4%EC%97%AC%EC%9A%94%29/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">소리가 안 들려요 (화면만 보여요)</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EC%9D%B8%ED%84%B0%EB%84%B7%20%EC%97%B0%EA%B2%B0%EC%9D%B4%20%EC%95%88%EB%8F%BC%EC%9A%94/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">인터넷 연결이 안돼요</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EC%A0%84%EC%9B%90%EC%9D%80%20%EC%BC%9C%EC%A7%80%EB%8A%94%EB%8D%B0%20%ED%99%94%EB%A9%B4%EC%9D%B4%20%EC%95%88%EB%B3%B4%EC%97%AC%EC%9A%94%20%28%EC%86%8C%EB%A6%AC%EB%A7%8C%20%EB%93%A4%EB%A0%A4%EC%9A%94%29/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">전원은 켜지는데 화면이 안보여요 (소리만 들려요)</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EC%A0%84%EC%9B%90%EC%9D%B4%20%EC%95%88%EC%BC%9C%EC%A0%B8%EC%9A%94/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">전원이 안켜져요</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EC%A0%84%EC%9B%90%EC%9D%B4%20%EC%9E%90%EB%8F%99%EC%9C%BC%EB%A1%9C%20%EA%BA%BC%EC%A0%B8%EC%9A%94/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">전원이 자동으로 꺼져요</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EC%A0%84%EC%9B%90%EC%9D%B4%20%EC%9E%AC%EB%B6%80%ED%8C%85%20%EB%8F%BC%EC%9A%94%20%28%EB%B6%80%ED%8C%85%20%ED%99%94%EB%A9%B4%EC%9D%B4%20%EB%B3%B4%EC%9D%B4%EB%A9%B0%20%EB%8B%A4%EC%8B%9C%20%EC%A0%84%EC%9B%90%EC%9D%B4%20%EC%BC%9C%EC%A0%B8%EC%9A%94%29/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">전원이 재부팅 돼요 (부팅 화면이 보이며 다시 전원이 켜져요)</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EC%A7%80%EC%83%81%ED%8C%8C%20%EC%B1%84%EB%84%90%EC%9D%B4%20%EC%95%88%EB%B3%B4%EC%97%AC%EC%9A%94%20%28%EC%A7%80%EC%83%81%ED%8C%8C%20%EC%B1%84%EB%84%90%20%EA%B2%80%EC%83%89%EC%9D%B4%20%EC%95%88%EB%8F%BC%EC%9A%94%ED%99%88%EC%87%BC%ED%95%91%20%EB%93%B1%20%EC%BC%80%EC%9D%B4%EB%B8%94%20%EC%B1%84%EB%84%90%EC%9D%80%20%EB%B3%B4%EC%9D%B4%EB%8A%94%EB%8D%B0%20%EA%B3%B5%EC%98%81%EB%B0%A9%EC%86%A1%20%EA%B2%80%EC%83%89%EC%9D%B4%20%EC%95%88%EB%8F%BC%EC%9A%94%29%20%5B%EC%95%88%ED%85%8C%EB%82%98RF%20%EB%8F%99%EC%B6%95%20%EC%BC%80%EC%9D%B4%EB%B8%94%20%EC%82%AC%EC%9A%A9%20%EC%8B%9C%5D/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">지상파 채널이 안보여요 (지상파 채널 검색이 안돼요홈쇼핑 등 케이블 채널은 보이는데 공영방송 검색이 안돼요) [안테나RF 동축 케이블 사용 시]</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EC%A7%80%EC%83%81%ED%8C%8C%20%EC%B1%84%EB%84%90%EC%9D%B4%20%EC%95%88%EB%B3%B4%EC%97%AC%EC%9A%94%20%28%EC%A7%80%EC%83%81%ED%8C%8C%20%EC%B1%84%EB%84%90%20%EA%B2%80%EC%83%89%EC%9D%B4%20%EC%95%88%EB%8F%BC%EC%9A%94%ED%99%88%EC%87%BC%ED%95%91%20%EB%93%B1%20%EC%BC%80%EC%9D%B4%EB%B8%94%20%EC%B1%84%EB%84%90%EC%9D%80%20%EB%B3%B4%EC%9D%B4%EB%8A%94%EB%8D%B0%20%EA%B3%B5%EC%98%81%EB%B0%A9%EC%86%A1%20%EA%B2%80%EC%83%89%EC%9D%B4%20%EC%95%88%EB%8F%BC%EC%9A%94%29%20%5B%EC%95%88%ED%85%8C%EB%82%98RF%20%EB%8F%99%EC%B6%95%EC%BC%80%EC%9D%B4%EB%B8%94%20%EC%82%AC%EC%9A%A9%20%EC%8B%9C%5D/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">지상파 채널이 안보여요 (지상파 채널 검색이 안돼요홈쇼핑 등 케이블 채널은 보이는데 공영방송 검색이 안돼요) [안테나RF 동축케이블 사용 시]</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%EC%BF%A0%EC%B9%B4%20%EC%9A%B8%ED%8A%B8%EB%9D%BC%20%EC%85%8B%ED%86%B1%EB%B0%95%EC%8A%A4%20%EC%86%8C%EB%A6%AC%EA%B0%80%20%EC%95%88%EB%93%A4%EB%A0%A4%EC%9A%94%20%28%EC%86%8C%EB%A6%AC%EA%B0%80%20%EC%9E%91%EA%B2%8C%20%EB%93%A4%EB%A0%A4%EC%9A%94%29%20%5BATBOX001%20THE%20ULTRA%5D/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">쿠카 울트라 셋톱박스 소리가 안들려요 (소리가 작게 들려요) [ATBOX001 THE ULTRA]</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%ED%86%B5%ED%95%A9%20%EB%A6%AC%EB%AA%A8%EC%BB%A8%20%28%EC%9D%B4%EC%8A%A4%ED%8A%B8%EB%9D%BC%20%EC%98%AC%EC%9D%B8%EC%9B%90%20%EB%A6%AC%EB%AA%A8%EC%BB%A8%29%20%EB%8F%99%EC%9E%91%EC%9D%B4%20%EC%95%88%EB%8F%BC%EC%9A%94/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">통합 리모컨 (이스트라 올인원 리모컨) 동작이 안돼요</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%ED%86%B5%ED%95%A9%20%EB%A6%AC%EB%AA%A8%EC%BB%A8%EC%9D%98%20%EA%B5%AC%EA%B8%80%20%EC%96%B4%EC%8B%9C%EC%8A%A4%ED%84%B4%ED%8A%B8%20%EB%B2%84%ED%8A%BC%EC%9D%B4%20%EC%95%88%EB%8F%BC%EC%9A%94%20%28%EC%9D%8C%EC%84%B1%EA%B2%80%EC%83%89%29/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">통합 리모컨의 구글 어시스턴트 버튼이 안돼요 (음성검색)</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%ED%99%94%EB%A9%B4%20%EA%B3%A0%EA%B8%89%EC%84%A4%EC%A0%95%EC%9D%B4%20%EA%B6%81%EA%B8%88%ED%95%B4%EC%9A%94/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">화면 고급설정이 궁금해요</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%ED%99%94%EB%A9%B4%EC%97%90%20%EC%A4%84%EC%9D%B4%20%EC%83%9D%EA%B2%BC%EC%96%B4%EC%9A%94/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">화면에 줄이 생겼어요</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%ED%99%94%EB%A9%B4%EC%9D%B4%20%EA%B9%9C%EB%B9%A1%EC%97%AC%EC%9A%94%20%28%EC%8B%9C%EC%B2%AD%20%EC%A4%91%20%ED%99%94%EB%A9%B4%EC%9D%B4%20%EC%96%B4%EB%91%90%EC%9B%8C%EC%A1%8C%EB%8B%A4%EA%B0%80%20%EB%B3%B4%EC%97%AC%EC%9A%94%29/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">화면이 깜빡여요 (시청 중 화면이 어두워졌다가 보여요)</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="./%ED%81%AC%EB%A1%A4%EB%A7%81_selftest_MD/%ED%99%94%EB%A9%B4%EC%9D%B4%20%ED%8C%8C%EC%86%90%EB%90%90%EC%96%B4%EC%9A%94/index.html" class="card">
+                <div class="card-body">
+                    <span class="badge">Selftest</span>
+                    <h3 class="card-title">화면이 파손됐어요</h3>
+                    <div class="card-meta">
+                        <span>View Document &rarr;</span>
+                    </div>
+                </div>
+            </a>
+            </div>
+    </main>
+
+    <footer style="text-align: center; padding: 2rem; color: #6b7280; font-size: 0.875rem;">
+        &copy; 2024 ESTLA. All rights reserved.
+    </footer>
+</body>
+</html>
