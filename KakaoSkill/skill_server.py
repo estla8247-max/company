@@ -257,7 +257,7 @@ def list_card(title: str, items: List[Dict]):
                 "messageText": f"{title} 더 보여줘"
             },
             {
-                "label": "🌐 웹에서 전체 보기",
+                "label": "🌐 전체보기",
                 "action": "webLink",
                 "webLinkUrl": f"{HOST_BASE_URL}/index.html"
             }
@@ -265,7 +265,7 @@ def list_card(title: str, items: List[Dict]):
     else:
          card["buttons"] = [
             {
-                "label": "🌐 웹에서 전체 보기",
+                "label": "🌐 전체보기",
                 "action": "webLink",
                 "webLinkUrl": f"{HOST_BASE_URL}/index.html"
             }
@@ -366,41 +366,45 @@ def get_welcome_response():
                                 "title": "🛠️ 고객 서비스",
                                 "description": "AS 접수부터 자가 진단까지!",
                                 "thumbnail": {
-                                    "imageUrl": f"{HOST_BASE_URL}/images/default_thumbnail.jpg"
+                                    "imageUrl": f"{HOST_BASE_URL}/images/menu_customer_v2.png"
                                 },
                                 "buttons": [
-                                    {"action": "message", "label": "자가 진단", "messageText": "자가 진단 리스트 보여줘"},
-                                    {"action": "message", "label": "자주 묻는 질문", "messageText": "QnA 리스트 보여줘"},
-                                    {"action": "message", "label": "상담원 연결", "messageText": "상담원 연결"}
+                                    {"action": "message", "label": "🛠️ 자가 진단", "messageText": "자가 진단 리스트 보여줘"},
+                                    {"action": "message", "label": "❓ 자주 묻는 질문", "messageText": "QnA 리스트 보여줘"},
+                                    {"action": "message", "label": "📝 AS 접수", "messageText": "상담원 연결"}
                                 ]
                             },
                             {
                                 "title": "📺 제품 및 혜택",
                                 "description": "이스트라의 제품과 이벤트를 확인하세요.",
                                 "thumbnail": {
-                                    "imageUrl": f"{HOST_BASE_URL}/images/default_thumbnail.jpg"
+                                    "imageUrl": f"{HOST_BASE_URL}/images/menu_product_v2.png"
                                 },
                                 "buttons": [
-                                    {"action": "webLink", "label": "제품 확인", "webLinkUrl": "https://estla.co.kr/194"},
-                                    {"action": "webLink", "label": "이달의 이벤트", "webLinkUrl": "https://estla.co.kr/estlaevent"},
-                                    {"action": "message", "label": "나에게 맞는 TV", "messageText": "나에게 맞는 TV 추천해줘"}
+                                    {"action": "webLink", "label": "📺 제품 확인", "webLinkUrl": "https://estla.co.kr/194"},
+                                    {"action": "webLink", "label": "🎉 이달의 이벤트", "webLinkUrl": "https://estla.co.kr/estlaevent"},
+                                    {"action": "message", "label": "🔍 나에게 맞는 TV", "messageText": "나에게 맞는 TV 추천해줘"}
                                 ]
                             },
                             {
                                 "title": "🏢 이스트라 정보",
                                 "description": "이스트라에 대해 알아보세요.",
                                 "thumbnail": {
-                                    "imageUrl": f"{HOST_BASE_URL}/images/default_thumbnail.jpg"
+                                    "imageUrl": f"{HOST_BASE_URL}/images/menu_company_v2.png"
                                 },
                                 "buttons": [
-                                    {"action": "message", "label": "홈페이지", "messageText": "홈페이지 이동"},
-                                    {"action": "message", "label": "배송조회", "messageText": "배송조회"},
-                                    {"action": "message", "label": "회사소개", "messageText": "회사 소개"}
+                                    {"action": "message", "label": "🏠 홈페이지", "messageText": "홈페이지 이동"},
+                                    {"action": "message", "label": "🚚 배송조회", "messageText": "배송조회"},
+                                    {"action": "message", "label": "🏢 회사소개", "messageText": "회사 소개"}
                                 ]
                             }
                         ]
                     }
                 }
+            ],
+            "quickReplies": [
+                {"messageText": "홈으로", "action": "message", "label": "🏠 홈으로"},
+                {"messageText": "처음으로", "action": "message", "label": "🔄 처음으로"}
             ]
         }
     }
