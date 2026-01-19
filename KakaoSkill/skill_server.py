@@ -589,27 +589,23 @@ async def keep_alive():
 async def health_check():
     return {"status": "alive"}
 
-if __name__ == "__main__":
-    # Mount static files to serve HTML content locally for testing
-    from fastapi.staticfiles import StaticFiles
-    if os.path.exists(BASE_DIR):
-    # Custom Static File Serving to handle Korean paths correctly
-    @app.get("/static/{file_path:path}")
-    async def serve_static(file_path: str):
-        try:
-            # Manually decode the path
-            decoded_path = urllib.parse.unquote(file_path)
-            full_path = os.path.join(BASE_DIR, decoded_path)
-            
-            if os.path.exists(full_path) and os.path.isfile(full_path):
-                return FileResponse(full_path)
-            else:
-                print(f"File not found: {full_path}")
-                return {"error": "File not found"}
-        except Exception as e:
-             print(f"Error serving file: {e}")
-             return {"error": str(e)}
+# Custom Static File Serving to handle Korean paths correctly
+@app.get("/static/{file_path:path}")
+async def serve_static(file_path: str):
+    try:
+        # Manually decode the path
+        decoded_path = urllib.parse.unquote(file_path)
+        full_path = os.path.join(BASE_DIR, decoded_path)
+        
+        if os.path.exists(full_path) and os.path.isfile(full_path):
+            return FileResponse(full_path)
+        else:
+            print(f"File not found: {full_path}")
+            return {"error": "File not found"}
+    except Exception as e:
+            print(f"Error serving file: {e}")
+            return {"error": str(e)}
 
+if __name__ == "__main__":
     print(f"Serving static files from {BASE_DIR} at /static (Custom Handler)")
-    
     uvicorn.run(app, host="0.0.0.0", port=8081)
