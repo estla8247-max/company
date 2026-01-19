@@ -10,6 +10,7 @@ import uvicorn
 import asyncio
 import httpx
 
+from fastapi.responses import FileResponse
 app = FastAPI()
 
 app.add_middleware(
@@ -218,7 +219,7 @@ def list_card(title: str, items: List[Dict]):
             {
                 "label": "더 보기",
                 "action": "message",
-                "messageText": f"{title} 더 보여줘" # Placeholder for pagination
+            "messageText": f"{title} 더 보여줘" # Placeholder for pagination
             }
         ]
         
@@ -290,11 +291,12 @@ def get_welcome_response():
             "outputs": [
                 {
                     "simpleText": {
-                        "text": "안녕하세요 이스트라입니다.\n무엇을 도와드릴까요?"
+                        "text": "안녕하세요 이스트라입니다.\n원하시는 키워드를 입력하거나\n버튼을 선택해주세요."
                     }
                 }
             ],
             "quickReplies": [
+                {"messageText": "챗봇 사용법", "action": "message", "label": "챗봇 사용법"},
                 {"messageText": "홈페이지 이동", "action": "message", "label": "홈페이지"},
                 {"messageText": "배송조회", "action": "message", "label": "배송조회"},
                 {"messageText": "회사 소개", "action": "message", "label": "회사소개"},
@@ -321,6 +323,58 @@ async def fallback(request: Request):
         # 0. Handle Home/Start Keywords
         if any(keyword == utterance for keyword in ["시작", "홈으로", "처음으로", "start", "home"]):
              return get_welcome_response()
+
+        # 0-1. Handle Chatbot Usage
+        if "챗봇 사용법" in utterance or "사용법" in utterance:
+            return {
+                "version": "2.0",
+                "template": {
+                    "outputs": [
+                        simple_text(
+                            "💡 [이스트라 챗봇 사용법]\n\n"
+                            "1. 궁금한 단어를 입력해보세요.\n"
+                            "   예) '리모컨', '화면 설정', 'AS'\n\n"
+                            "2. 아래 메뉴 버튼을 눌러보세요.\n"
+                            "   자주 묻는 질문이나 자가 진단을\n"
+                            "   쉽게 확인할 수 있습니다.\n\n"
+                            "3. 해결이 안 되시면 '상담원 연결'을\n"
+                            "   눌러주세요."
+                        )
+                    ]
+                }
+            }
+
+        # 0-2. Handle Pagination (More Results)
+        # Pattern: "{query} 더 보여줘" or "{query} 검색 결과 더 보여줘"
+        if "더 보여줘" in utterance:
+            # Extract query
+            query = utterance.replace(" 검색 결과 더 보여줘", "").replace(" 더 보여줘", "").strip()
+            
+            # Re-search
+            results = indexer.search(query)
+            
+            # Get next 5 items (index 5 to 10)
+            next_items = results[5:10]
+            
+            if next_items:
+                return {
+                    "version": "2.0",
+                    "template": {
+                        "outputs": [
+                            simple_text(f"'{query}' 검색 결과 더 보기 (6~{5+len(next_items)}위)"),
+                            list_card(f"'{query}' 더 보기", next_items)
+                        ]
+                    }
+                }
+            else:
+                 return {
+                    "version": "2.0",
+                    "template": {
+                        "outputs": [
+                            simple_text("더 이상 보여줄 내용이 없습니다.")
+                        ]
+                    }
+                }
 
         # 1. Handle Category Requests (Explicit Mappings)
         # Prioritize specific "Selftest" keywords first to avoid "리스트" ambiguity
@@ -362,7 +416,7 @@ async def fallback(request: Request):
                                     {
                                         "action": "webLink",
                                         "label": "카카오톡 상담하기",
-                                        "webLinkUrl": "http://pf.kakao.com/_xxxx/chat" # Replace with actual link
+                                        "webLinkUrl": "http://pf.kakao.com/_RxffxmT/chat" # Corrected Kakao Channel Link
                                     }
                                 ]
                             }
@@ -539,7 +593,23 @@ if __name__ == "__main__":
     # Mount static files to serve HTML content locally for testing
     from fastapi.staticfiles import StaticFiles
     if os.path.exists(BASE_DIR):
-        app.mount("/static", StaticFiles(directory=BASE_DIR), name="static")
-        print(f"Serving static files from {BASE_DIR} at /static")
+    # Custom Static File Serving to handle Korean paths correctly
+    @app.get("/static/{file_path:path}")
+    async def serve_static(file_path: str):
+        try:
+            # Manually decode the path
+            decoded_path = urllib.parse.unquote(file_path)
+            full_path = os.path.join(BASE_DIR, decoded_path)
+            
+            if os.path.exists(full_path) and os.path.isfile(full_path):
+                return FileResponse(full_path)
+            else:
+                print(f"File not found: {full_path}")
+                return {"error": "File not found"}
+        except Exception as e:
+             print(f"Error serving file: {e}")
+             return {"error": str(e)}
+
+    print(f"Serving static files from {BASE_DIR} at /static (Custom Handler)")
     
     uvicorn.run(app, host="0.0.0.0", port=8081)
