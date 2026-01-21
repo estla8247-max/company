@@ -403,7 +403,7 @@ def get_welcome_response():
                 }
             ],
             "quickReplies": [
-                {"messageText": "홈으로", "action": "message", "label": "🏠 홈으로"},
+                {"messageText": "챗봇 사용법", "action": "message", "label": "💡 챗봇 설명서"},
                 {"messageText": "처음으로", "action": "message", "label": "🔄 처음으로"}
             ]
         }
@@ -452,7 +452,58 @@ async def fallback(request: Request):
                 "version": "2.0",
                 "template": {
                     "outputs": [
-                        simple_text("📺 고객님에게 딱 맞는 TV를 찾아드릴게요!\n\n어떤 용도로 주로 사용하시나요?\n(예: 넷플릭스, 게임, 방송 시청)")
+                        simple_text("📺 고객님에게 딱 맞는 TV를 찾아드릴게요!\n\n어떤 용도로 주로 사용하시나요?\n(아래 버튼을 선택하거나 키워드를 입력해주세요)")
+                    ],
+                    "quickReplies": [
+                        {"messageText": "넷플릭스용 TV 추천해줘", "action": "message", "label": "🎬 넷플릭스/유튜브"},
+                        {"messageText": "게임용 TV 추천해줘", "action": "message", "label": "🎮 게임 (PS5/Xbox)"},
+                        {"messageText": "방송 시청용 TV 추천해줘", "action": "message", "label": "📺 일반 방송 시청"}
+                    ]
+                }
+            }
+
+        # 0-3-1. Handle TV Recommendation Responses
+        if "넷플릭스" in utterance or "넷플" in utterance or "유튜브" in utterance:
+             return {
+                "version": "2.0",
+                "template": {
+                    "outputs": [
+                        basic_card({
+                            "title": "🎬 넷플릭스/유튜브 머신! 구글 TV",
+                            "description": "스마트 기능이 강화된 이스트라 구글 TV를 추천합니다.",
+                            "image_url": f"{HOST_BASE_URL}/images/menu_product_v2.png",
+                            "link": "https://estla.co.kr/194"
+                        })["basicCard"]
+                    ]
+                }
+            }
+        
+        if "게임" in utterance or "플스" in utterance or "xbox" in utterance:
+             return {
+                "version": "2.0",
+                "template": {
+                    "outputs": [
+                        basic_card({
+                            "title": "🎮 게이머를 위한 144Hz QLED",
+                            "description": "압도적인 주사율과 반응속도! 이스트라 쿠카 시리즈를 추천합니다.",
+                            "image_url": f"{HOST_BASE_URL}/images/menu_product_v2.png",
+                            "link": "https://estla.co.kr/194"
+                        })["basicCard"]
+                    ]
+                }
+            }
+
+        if "방송" in utterance or "효도" in utterance:
+             return {
+                "version": "2.0",
+                "template": {
+                    "outputs": [
+                        basic_card({
+                            "title": "📺 가성비 최고! 일반형 TV",
+                            "description": "복잡한 기능 없이 방송 시청에 충실한 제품을 추천합니다.",
+                            "image_url": f"{HOST_BASE_URL}/images/menu_product_v2.png",
+                            "link": "https://estla.co.kr/194"
+                        })["basicCard"]
                     ]
                 }
             }
@@ -614,17 +665,7 @@ async def fallback(request: Request):
                 }
             }
             
-        if any(keyword in utterance for keyword in ["상품", "제품", "모델"]):
-            items = indexer.get_by_category("Products")
-            return {
-                "version": "2.0",
-                "template": {
-                    "outputs": [
-                        simple_text("이스트라의 주요 제품 리스트입니다.\n원하시는 항목을 선택해주세요."),
-                        list_card("이스트라 제품", items)
-                    ]
-                }
-            }
+
 
         # 2. Handle Search
         results = indexer.search(utterance)
