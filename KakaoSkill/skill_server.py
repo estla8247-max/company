@@ -388,7 +388,7 @@ def get_welcome_response():
                                 "buttons": [
                                     {"action": "message", "label": "🛠️ 자가 진단", "messageText": "자가 진단 리스트 보여줘"},
                                     {"action": "message", "label": "❓ 자주 묻는 질문", "messageText": "QnA 리스트 보여줘"},
-                                    {"action": "message", "label": "📝 AS 접수", "messageText": "상담원 연결"}
+                                    {"action": "message", "label": "📝 AS 접수", "messageText": "상담원 연결 안내"}
                                 ]
                             },
                             {
@@ -630,7 +630,7 @@ async def fallback(request: Request):
                 }
             }
             
-        if "상담원" in utterance:
+        if "상담원 연결 안내" in utterance:
              return {
                 "version": "2.0",
                 "template": {
