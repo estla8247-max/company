@@ -31,7 +31,11 @@ if not os.path.exists(BASE_DIR):
     BASE_DIR = os.path.join(CURRENT_DIR, "HTML_Conversion")
 
 RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL", "http://localhost:8081")
-HOST_BASE_URL = f"{RENDER_EXTERNAL_URL}/static"
+HOST_BASE_URL = f"{RENDER_EXTERNAL_URL}" 
+
+# Ensure HOST_BASE_URL is absolute
+if not HOST_BASE_URL.startswith("http"):
+    HOST_BASE_URL = f"https://{HOST_BASE_URL}"
 
 # --- Data Models ---
 
@@ -695,7 +699,20 @@ async def fallback(request: Request):
                 }
             }
         
-        # 3. No Results - True Fallback
+        # 3. Handle Product Keywords (Fallback if search fails)
+        if any(keyword in utterance for keyword in ["상품", "제품", "모델"]):
+            items = indexer.get_by_category("Products")
+            return {
+                "version": "2.0",
+                "template": {
+                    "outputs": [
+                        simple_text("이스트라의 주요 제품 리스트입니다.\n원하시는 항목을 선택해주세요."),
+                        list_card("이스트라 제품", items)
+                    ]
+                }
+            }
+
+        # 4. No Results - True Fallback
         return {
             "version": "2.0",
             "template": {
