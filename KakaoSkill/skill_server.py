@@ -416,8 +416,7 @@ def get_welcome_response():
                 }
             ],
             "quickReplies": [
-                {"messageText": "챗봇 사용법", "action": "message", "label": "💡 챗봇 설명서"},
-                {"messageText": "처음으로", "action": "message", "label": "🔄 처음으로"}
+                {"messageText": "챗봇 사용법", "action": "message", "label": "💡 챗봇 설명서"}
             ]
         }
     }
@@ -524,6 +523,27 @@ async def fallback(request: Request):
                             "image_url": f"{HOST_BASE_URL}/images/menu_product_v2.png",
                             "link": "https://estla.co.kr/194"
                         })["basicCard"]
+                    ]
+                }
+            }
+
+        # 0-3-2. Handle Unrecognized TV Recommendation Inputs (Contextual Fallback)
+        # If the user says "TV" or something similar but it wasn't caught by specific keywords above
+        # OR if they are in the middle of the flow (implied by context, though we are stateless)
+        # We check for "TV" specifically to provide a helpful prompt instead of falling through to search
+        if "tv" in utterance.lower() or "티비" in utterance:
+             return {
+                "version": "2.0",
+                "template": {
+                    "outputs": [
+                        simple_text("고객님에게 맞는 TV를 찾아드리기 위해 정확한 답변이 필요해요!\n키워드 (ex. 게임, 유튜브 등) 으로 입력해주세요!")
+                    ],
+                    "quickReplies": [
+                        {"messageText": "넷플릭스용 TV 추천해줘", "action": "message", "label": "🎬 넷플릭스/유튜브"},
+                        {"messageText": "게임용 TV 추천해줘", "action": "message", "label": "🎮 게임 (PS5/Xbox)"},
+                        {"messageText": "방송 시청용 TV 추천해줘", "action": "message", "label": "📺 일반 방송 시청"},
+                        {"messageText": "챗봇 사용법", "action": "message", "label": "💡 챗봇 설명서"},
+                        {"messageText": "처음으로", "action": "message", "label": "🔄 처음으로"}
                     ]
                 }
             }
@@ -735,16 +755,27 @@ async def fallback(request: Request):
                 "outputs": [
                     simple_text(f"'{utterance}'에 대한 내용을 찾지 못했습니다.\n다른 키워드로 검색해보시거나 메뉴를 선택해주세요.")
                 ],
+                ],
                 "quickReplies": [
                     {
                         "messageText": "홈으로",
                         "action": "message",
-                        "label": "홈으로"
+                        "label": "🏠 홈으로"
                     },
                     {
                         "messageText": "QnA 리스트 보여줘",
                         "action": "message",
                         "label": "전체 목록 보기"
+                    },
+                    {
+                        "messageText": "챗봇 사용법",
+                        "action": "message",
+                        "label": "💡 챗봇 설명서"
+                    },
+                    {
+                        "messageText": "처음으로",
+                        "action": "message",
+                        "label": "🔄 처음으로"
                     }
                 ]
             }
