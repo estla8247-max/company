@@ -787,7 +787,7 @@ async def fallback(request: Request):
                 "outputs": [
                     simple_text(f"'{utterance}'에 대한 내용을 찾지 못했습니다.\n다른 키워드로 검색해보시거나 메뉴를 선택해주세요.")
                 ],
-                ],
+
                 "quickReplies": [
                     {
                         "messageText": "홈으로",
