@@ -624,15 +624,22 @@ async def fallback(request: Request):
                             "basicCard": {
                                 "title": "상담원 연결",
                                 "description": "평일 09:00 ~ 18:00 (점심시간 12:00 ~ 13:00)",
+                                "thumbnail": {
+                                    "imageUrl": f"{HOST_BASE_URL}/images/menu_customer_v2.png"
+                                },
                                 "buttons": [
                                     {
                                         "action": "webLink",
                                         "label": "카카오톡 상담하기",
-                                        "webLinkUrl": "http://pf.kakao.com/_RxffxmT/chat" # Corrected Kakao Channel Link
+                                        "webLinkUrl": "http://pf.kakao.com/_RxffxmT/chat" 
                                     }
                                 ]
                             }
                         }
+                    ],
+                    "quickReplies": [
+                        {"messageText": "챗봇 사용법", "action": "message", "label": "💡 챗봇 설명서"},
+                        {"messageText": "처음으로", "action": "message", "label": "🔄 처음으로"}
                     ]
                 }
             }
@@ -647,6 +654,9 @@ async def fallback(request: Request):
                             "basicCard": {
                                 "title": "이스트라 홈페이지",
                                 "description": "이스트라의 다양한 제품을 만나보세요.",
+                                "thumbnail": {
+                                    "imageUrl": f"{HOST_BASE_URL}/images/menu_company_v2.png"
+                                },
                                 "buttons": [
                                     {
                                         "action": "webLink",
@@ -656,6 +666,10 @@ async def fallback(request: Request):
                                 ]
                             }
                         }
+                    ],
+                    "quickReplies": [
+                        {"messageText": "챗봇 사용법", "action": "message", "label": "💡 챗봇 설명서"},
+                        {"messageText": "처음으로", "action": "message", "label": "🔄 처음으로"}
                     ]
                 }
             }
@@ -669,6 +683,9 @@ async def fallback(request: Request):
                             "basicCard": {
                                 "title": "배송 조회",
                                 "description": "주문하신 상품의 배송 현황을 확인하세요.",
+                                "thumbnail": {
+                                    "imageUrl": f"{HOST_BASE_URL}/images/menu_company_v2.png"
+                                },
                                 "buttons": [
                                     {
                                         "action": "webLink",
@@ -678,6 +695,10 @@ async def fallback(request: Request):
                                 ]
                             }
                         }
+                    ],
+                    "quickReplies": [
+                        {"messageText": "챗봇 사용법", "action": "message", "label": "💡 챗봇 설명서"},
+                        {"messageText": "처음으로", "action": "message", "label": "🔄 처음으로"}
                     ]
                 }
             }
@@ -692,6 +713,9 @@ async def fallback(request: Request):
                             "basicCard": {
                                 "title": "이스트라 브랜드 스토리",
                                 "description": "이스트라의 이야기를 더 자세히 알아보세요.",
+                                "thumbnail": {
+                                    "imageUrl": f"{HOST_BASE_URL}/images/menu_company_v2.png"
+                                },
                                 "buttons": [
                                     {
                                         "action": "webLink",
@@ -701,6 +725,10 @@ async def fallback(request: Request):
                                 ]
                             }
                         }
+                    ],
+                    "quickReplies": [
+                        {"messageText": "챗봇 사용법", "action": "message", "label": "💡 챗봇 설명서"},
+                        {"messageText": "처음으로", "action": "message", "label": "🔄 처음으로"}
                     ]
                 }
             }
