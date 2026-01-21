@@ -37,7 +37,11 @@ if not os.path.exists(BASE_DIR):
     BASE_DIR = os.path.join(CURRENT_DIR, "HTML_Conversion")
 
 # Mount Static Files
-app.mount("/images", StaticFiles(directory=os.path.join(BASE_DIR, "images")), name="images")
+images_dir = os.path.join(BASE_DIR, "images")
+if os.path.exists(images_dir):
+    app.mount("/images", StaticFiles(directory=images_dir), name="images")
+else:
+    print(f"Warning: Images directory not found at {images_dir}")
 
 RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL", "http://localhost:8081")
 HOST_BASE_URL = f"{RENDER_EXTERNAL_URL}" 
@@ -619,7 +623,7 @@ async def fallback(request: Request):
                 "version": "2.0",
                 "template": {
                     "outputs": [
-                        simple_text("상담원 연결을 원하시면 아래 버튼을 눌러주세요."),
+                        simple_text("챗봇상담이 종료되었습니다. 상담원 연결 문의내용을 남겨주세요."),
                         {
                             "basicCard": {
                                 "title": "상담원 연결",
