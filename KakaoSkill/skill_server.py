@@ -645,9 +645,9 @@ async def fallback(request: Request):
                                 },
                                 "buttons": [
                                     {
-                                        "action": "webLink",
-                                        "label": "카카오톡 상담하기",
-                                        "webLinkUrl": "http://pf.kakao.com/_RxffxmT/chat" 
+                                        "action": "message",
+                                        "label": "상담원 연결하기",
+                                        "messageText": "상담원 연결"
                                     }
                                 ]
                             }
