@@ -467,7 +467,14 @@ async def fallback(request: Request):
             }
 
         # 0-3-1. Handle TV Recommendation Responses
-        if "넷플릭스" in utterance or "넷플" in utterance or "유튜브" in utterance:
+        
+        # Keywords
+        keywords_ott = ["넷플", "유튜브", "영화", "드라마", "ott", "영상", "디즈니", "티빙", "웨이브"]
+        keywords_game = ["게임", "플스", "xbox", "닌텐도", "스위치", "롤", "배그", "디아블로", "마비노기", "오버워치", "스팀", "ps5", "ps4"]
+        keywords_broadcast = ["방송", "효도", "뉴스", "아침", "부모님", "안방", "거실"]
+        keywords_any = ["상관", "아무거나", "모름", "그냥", "추천", "모르겠어"]
+
+        if any(k in utterance for k in keywords_ott):
              return {
                 "version": "2.0",
                 "template": {
@@ -482,7 +489,7 @@ async def fallback(request: Request):
                 }
             }
         
-        if "게임" in utterance or "플스" in utterance or "xbox" in utterance:
+        if any(k in utterance for k in keywords_game):
              return {
                 "version": "2.0",
                 "template": {
@@ -497,14 +504,14 @@ async def fallback(request: Request):
                 }
             }
 
-        if "방송" in utterance or "효도" in utterance:
+        if any(k in utterance for k in keywords_broadcast) or any(k in utterance for k in keywords_any):
              return {
                 "version": "2.0",
                 "template": {
                     "outputs": [
                         basic_card({
-                            "title": "📺 가성비 최고! 일반형 TV",
-                            "description": "복잡한 기능 없이 방송 시청에 충실한 제품을 추천합니다.",
+                            "title": "📺 가성비 최고! 일반형/All-Round TV",
+                            "description": "복잡한 기능 없이 방송 시청에 충실하거나, 모든 용도에 적합한 제품입니다.",
                             "image_url": f"{HOST_BASE_URL}/images/menu_product_v2.png",
                             "link": "https://estla.co.kr/194"
                         })["basicCard"]
