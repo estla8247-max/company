@@ -5,6 +5,7 @@ import difflib
 import html
 from typing import Optional, Dict, Any, List
 from fastapi import FastAPI, Request
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
@@ -22,6 +23,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount Static Files
+# Ensure BASE_DIR is defined before this (it is in the next block, so I need to move this or use a deferred mount)
+# Actually, BASE_DIR is defined below. I should place the mount after BASE_DIR definition.
+
+
 # Configuration
 # Determine the absolute path to the directory containing this script
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -29,6 +35,9 @@ BASE_DIR = os.path.join(CURRENT_DIR, "..", "HTML_Conversion")
 
 if not os.path.exists(BASE_DIR):
     BASE_DIR = os.path.join(CURRENT_DIR, "HTML_Conversion")
+
+# Mount Static Files
+app.mount("/images", StaticFiles(directory=os.path.join(BASE_DIR, "images")), name="images")
 
 RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL", "http://localhost:8081")
 HOST_BASE_URL = f"{RENDER_EXTERNAL_URL}" 
@@ -472,7 +481,7 @@ async def fallback(request: Request):
         keywords_ott = ["넷플", "유튜브", "영화", "드라마", "ott", "영상", "디즈니", "티빙", "웨이브"]
         keywords_game = ["게임", "플스", "xbox", "닌텐도", "스위치", "롤", "배그", "디아블로", "마비노기", "오버워치", "스팀", "ps5", "ps4"]
         keywords_broadcast = ["방송", "효도", "뉴스", "아침", "부모님", "안방", "거실"]
-        keywords_any = ["상관", "아무거나", "모름", "그냥", "추천", "모르겠어"]
+        keywords_any = ["상관", "아무거나", "모름", "그냥", "추천", "모르겠어", "걍", "티비", "tv"]
 
         if any(k in utterance for k in keywords_ott):
              return {
